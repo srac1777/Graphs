@@ -4,6 +4,14 @@ require_relative 'graph'
 
 def topological_sort(vertices)
     queue = Queue.new
+    checker = []
+
+    vertices.each do |v|
+        checker << v if v.in_edges != 1
+    end
+
+    return [] if checker.length > 1
+    
 
     vertices.each do |v|
         if v.in_edges.empty?
@@ -16,7 +24,11 @@ def topological_sort(vertices)
         current = queue.pop
         sorted << current
 
-        
+        current.out_edges.each do |edge|
+            queue.enq(edge.to_vertex) if edge.to_vertex.in_edges.empty?
+            edge.destroy!
+        end
+        vertices.delete(current)
     end
-
+    sorted
 end
